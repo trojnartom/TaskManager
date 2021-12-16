@@ -2,11 +2,11 @@ package pl.trojnartom.workshops.TaskManager;
 
 
 import org.apache.commons.lang3.ArrayUtils;
+import org.apache.commons.lang3.StringUtils;
 
-import java.awt.*;
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.io.PrintWriter;
 import java.util.Scanner;
 
 import static pl.coderslab.ConsoleColors.*;
@@ -35,13 +35,33 @@ public class taskManagerApp {
                 continue;
             }
             executeOption(option);
-//            if(is ExitOption(option)){
-//                break;
+                if(isExitOption(option)){
+                break;
+            }
+        }
+        printExitMessage();
+        saveTasks();
+    }
+
+    private static void saveTasks(){
+        try (PrintWriter writer = new PrintWriter(new File(TASKS_FILE_NAME))) {
+            for (String [] taskList : tasks) {
+                String taskLine = StringUtils.join(taskList, ",");
+                writer.println(taskLine);
+            }
+            System.out.println(GREEN + tasks.length + " tasks has been saved." + RESET);
+        } catch (IOException e) {
+            e.printStackTrace();
         }
     }
-//        printExitMessage;
-//        saveTasks;
-//    }
+
+    private static void printExitMessage() {
+        System.out.println(GREEN + "Hope You enjoy this program. See Ya :)");
+    }
+
+    private static boolean isExitOption(String option) {
+        return EXIT_OPTION.equalsIgnoreCase(option);
+    }
 
     private static void executeOption(String option) {
         switch (option) {
@@ -64,9 +84,11 @@ public class taskManagerApp {
     }
 
     private static void listTask() {
-        for (int i=0; i < tasks.length; i++){
-            String[] task = tasks[i];
-            System.out.print(i + ": " + task[i]);
+        for (String[] task : tasks) {
+            for (int j = 0; j < 3; j++) {
+                System.out.print(task[j] + " ");
+            }
+            System.out.println();
         }
         System.out.println();
     }
@@ -75,28 +97,42 @@ public class taskManagerApp {
         if (tasks.length == 0){
             System.out.println(RED + "No tasks to remove. Your schedule is empty" + RESET);
         }
+        System.out.println("Please select task to remove from: 0 - " + (tasks.length-1));
         Scanner scanner = new Scanner(System.in);
-        System.out.println("Please select task to remove from: 0 -" + tasks.length);
+        int taskNumber;
         while (true){
-
+            while (!(scanner.hasNextInt())) {
+                scanner.nextLine();
+                System.out.println("Invalid task no. Please give no between 0 - " + (tasks.length-1));
+            }
+            taskNumber = scanner.nextInt();
+            if (taskNumber >=0 && taskNumber < tasks.length){
+                break;
+            } else {
+                System.out.println(RED + "Invalid task no. Please give no between 0 - " + (tasks.length-1) + RESET);
+            }
         }
-
+        tasks = ArrayUtils.remove(tasks, taskNumber);
+        System.out.println(GREEN + "Task was successfuly deleted" + RESET);
+        saveTasks();
     }
+
 
     private static void addTask() {
         Scanner scanner = new Scanner(System.in);
         System.out.print("Please write task description: ");
         String desc = scanner.nextLine();
-        System.out.print("Please write task due date: ");
+        System.out.print("Please write task due date (YYYY-MM-DD): ");
         String date = scanner.nextLine();
 
-        String important = null;
+        String important;
         do {
             System.out.print("Is Your task important (true/false)? ");
             important = scanner.nextLine();
         } while (!("false".equals(important) || ("true".equals(important))));
         tasks = ArrayUtils.add(tasks, new String[] {desc, date, important});
-        System.out.println("Task was successfully added");
+        System.out.println(GREEN_BOLD + "Task was successfully added" + RESET);
+        saveTasks();
     }
 
     private static void printErrorMessage(String option) {
