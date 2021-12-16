@@ -26,18 +26,22 @@ public class taskManagerApp {
 
     public static void app() {
         printWelcomeMessage();
-        taskLoader ();
+        taskLoader();
         while (true) {
             Menu();
             String option = selectOption();
-            if (!validOption(option)){
-               printErrorMessage(option);
-               continue;
+            if (!validOption(option)) {
+                printErrorMessage(option);
+                continue;
             }
             executeOption(option);
-
+//            if(is ExitOption(option)){
+//                break;
         }
     }
+//        printExitMessage;
+//        saveTasks;
+//    }
 
     private static void executeOption(String option) {
         switch (option) {
@@ -60,10 +64,22 @@ public class taskManagerApp {
     }
 
     private static void listTask() {
-
+        for (int i=0; i < tasks.length; i++){
+            String[] task = tasks[i];
+            System.out.print(i + ": " + task[i]);
+        }
+        System.out.println();
     }
 
     private static void removeTask() {
+        if (tasks.length == 0){
+            System.out.println(RED + "No tasks to remove. Your schedule is empty" + RESET);
+        }
+        Scanner scanner = new Scanner(System.in);
+        System.out.println("Please select task to remove from: 0 -" + tasks.length);
+        while (true){
+
+        }
 
     }
 
@@ -119,7 +135,7 @@ public class taskManagerApp {
         for (String option: OPTIONS){
             System.out.println("" + option);
         }
-        System.out.println(BLUE + "Select an option: " + RESET);
+        System.out.print(BLUE + "Select an option: " + RESET);
     }
 
     private static void printWelcomeMessage() {
